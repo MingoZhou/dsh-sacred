@@ -7,6 +7,8 @@
 
 # dsh-sacred
 
+简体中文 · [English](./README.en.md)
+
 **剪除异常分支，守护神圣时间线。**<br/>
 给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 用的上下文修剪插件：不是“满了就从头砍”，而是剪掉已经**不再真实、不再有用**的分支。<br/>
 钉住的永不剪，剪掉的随时召回。
@@ -15,7 +17,7 @@
 [![dsh-plugin](https://img.shields.io/badge/dsh-plugin-4d6bfe.svg)](https://github.com/topics/dsh-plugin)
 ![status](https://img.shields.io/badge/status-preview-orange.svg)
 
-**[在线 Demo](https://mingozhou.github.io/dsh-sacred/)** · [为什么需要它](#为什么需要它) · [上下文裁剪面板](#上下文裁剪面板) · [安装](#安装) · [命令](#命令) · [工作原理](#工作原理) · [常见问题](#常见问题)
+**[在线 Demo](https://mingozhou.github.io/dsh-sacred/)** · [为什么需要它](#为什么需要它) · [上下文裁剪面板](#上下文裁剪面板) · [安装与使用](#安装与使用) · [命令](#命令) · [工作原理](#工作原理) · [常见问题](#常见问题)
 
 <img src="./assets/prune.webp" width="900" alt="一键裁剪过时的工具输出" />
 
@@ -96,38 +98,57 @@ DSH 自带的 `dsh-compaction-tool-result-pruner` **按长度**剪：超过 8192
 
 dsh-sacred 在每一步请求模型**之前**运行，并且排在 `dsh-compaction-basic` 前面：先剪掉异常分支，很多时候就用不着触发整段摘要了。
 
-## 安装
+## 安装与使用
+
+### 桌面客户端用户
+
+1. 打开 DSH 客户端，进入左侧的 **插件**。
+2. 在插件商店里搜索 **`dsh-sacred`**，点击 **安装**。
+3. 按提示重启 DSH。打开任意会话，顶部 **对话 / 轨迹** 旁边会出现 **「上下文裁剪」** 标签页。
+
+### 源码版本用户
+
+在 DeepSeek Harness 仓库根目录执行：
 
 ```sh
-dsh plugin --profile web add @mingozhou/dsh-sacred
+pnpm dsh plugin --profile web add dsh-sacred   # 从 npm 安装 dsh-sacred 并启用
+pnpm dsh web                                   # 重启
 ```
 
-或者直接从 GitHub 安装：
+`dsh plugin add` 会帮你完成 `npm install dsh-sacred`，并把插件写进 profile。只单独执行 `npm install` 不会启用插件。
+
+用 npm 全局安装 DSH 的用户，把 `pnpm dsh` 换成 `dsh` 即可：
 
 ```sh
-dsh plugin --profile web add "github:MingoZhou/dsh-sacred"
+dsh plugin --profile web add dsh-sacred
 ```
 
 把 `web` 换成你实际使用的 profile（`headless`、`acp` 或自定义）。安装后默认开启自动模式，不需要额外配置。
 
-### 源码安装的 DSH
+### 开始使用
 
-如果你的 DSH 是 `git clone` 后 `pnpm dsh web` 跑起来的，`dsh` 命令换成在 DSH 仓库根目录执行 `pnpm dsh`：
+1. **看负载**：打开一个会话，切到「上下文裁剪」。顶部的负载条显示当前用了多少 tokens、还剩多少、离自动压缩还有多远。
+2. **一键裁剪异常分支**：右上角按钮会裁掉所有检测到的异常分支（过时的文件读取、重复调用、失败后重试）。在侧栏的建议上悬停，可以先在负载条上预览能省多少。
+3. **手动裁剪**：觉得哪段工具输出以后用不上（比如中途问的一个题外话、已经用完的搜索结果），在时间线上点中它，或在侧栏「负载最重的分支」里点 **手动裁剪**。
+4. **钉住**：重要的内容（比如开头定下约束的那条指令）点 **钉住**，dsh-sacred 永远不会动它。
+5. **召回**：剪错了，在「已裁剪」列表里点 **召回**，原文立即回到上下文。
+
+不打开面板也没关系：自动模式会在每一步请求模型之前，把攒够一定量的异常分支剪掉。所有操作也都有对应的[斜杠命令](#命令)。
+
+### 从源码链接（插件开发者）
+
+想修改插件本身时，用本地路径链接安装：
 
 ```sh
-# 1. 克隆并构建插件
 git clone https://github.com/MingoZhou/dsh-sacred
 cd dsh-sacred && npm install && npm run build
 
-# 2. 回到 DSH 仓库根目录，用本地路径链接进 profile（必须是绝对路径）
 cd /path/to/deepseek-harness
-pnpm dsh plugin --profile web add /absolute/path/to/dsh-sacred
-
-# 3. 重启
+pnpm dsh plugin --profile web add /absolute/path/to/dsh-sacred   # 必须是绝对路径
 pnpm dsh web
 ```
 
-这是 link 安装：之后改了插件代码，只需要在插件目录重新 `npm run build`，再重启 DSH。
+之后改了插件代码，在插件目录重新 `npm run build`，再重启 DSH 即可。
 
 ### 排查
 
@@ -150,7 +171,7 @@ pnpm dsh web
 | `/sacred pin <seq>` | 钉住一个节点，dsh-sacred 永不剪除 |
 | `/sacred unpin <seq>` | 取消钉住 |
 | `/sacred pins` | 列出已钉住的节点 |
-| `/sacred restore <seq>` | 从虚空召回原文（传墓碑或原节点的 seq 都可以） |
+| `/sacred restore <seq>` | 召回原文（传墓碑或原节点的 seq 都可以） |
 | `/sacred cut <start> <end>` | 把一整段死胡同收束成一块摘要墓碑（调用官方 `compactRegion`，区间内有钉住的节点时会拒绝） |
 
 `seq` 是事件在会话日志里的序号，在「上下文裁剪」详情面板、DSH 的【轨迹】页或 [dsh-replay](https://github.com/MingoZhou/dsh-replay) 的时间线里都能看到。
