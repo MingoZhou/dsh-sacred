@@ -1,0 +1,16 @@
+# dsh-sacred bundle layer.
+# The pre-step listener is prepended, so pruning runs before
+# @deepseek-ai/dsh-compaction-basic checks pressure, whatever the mount order.
+- insert:
+    - id: sacred
+      name: '@mingozhou/dsh-sacred'
+      config:
+        auto: true
+        # Batch prunes: each one breaks the prefix cache after the first replaced node.
+        minSavingsChars: 6000
+        # Never touch the most recent N tool results.
+        protectRecentToolResults: 4
+        # Outputs shorter than this are not worth replacing (failures excepted).
+        minChars: 200
+        # Characters of the error kept as the "lesson" of a failed attempt.
+        failedKeepChars: 400

@@ -1,0 +1,82 @@
+{
+  "name": "@mingozhou/dsh-sacred",
+  "version": "0.2.0",
+  "description": "Value-based context pruning for DeepSeek Harness — prune stale branches, pin what matters, restore anything",
+  "type": "module",
+  "main": "lib/index.js",
+  "files": [
+    "lib",
+    "src",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.client.json",
+    "test": "node --experimental-strip-types --no-warnings --test tests/*.test.ts",
+    "demo": "node scripts/build.mjs && npx serve demo",
+    "screenshots": "node scripts/screenshot.mjs && node scripts/prune-anim.mjs",
+    "prepare": "node scripts/build.mjs"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "dsh",
+    "agent",
+    "context",
+    "compaction",
+    "pruning",
+    "visualization",
+    "context-pruning"
+  ],
+  "author": "MingoZhou",
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-host-webserver": "*",
+    "react": ">=18"
+  },
+  "engines": {
+    "node": ">=22.6"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "esbuild": "^0.28",
+    "playwright": "^1.60",
+    "react": "^19",
+    "react-dom": "^19",
+    "typescript": "^5.9",
+    "sharp": "^0.34"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MingoZhou/dsh-sacred.git"
+  },
+  "homepage": "https://mingozhou.github.io/dsh-sacred/",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "bugs": "https://github.com/MingoZhou/dsh-sacred/issues"
+}
